@@ -27,29 +27,31 @@ const PostSchema= new Schema({
         type: Date,
         default: Date.now
     },
-    likes: [
-        {
-          user:{ 
-                type: Schema.Types.ObjectId, 
-                ref: 'User'
-          }
-        }  
+    likes:
+    [
+      {
+        user:{ 
+            type: Schema.Types.ObjectId, 
+            ref: 'User'
+        }
+      }  
     ],
     
-    comments: [
-        {
-          text: {
+    comments:
+    [
+      {
+         text: {
             type:String,
-          },
-          created:{
+         },
+         created:{
             type: Date,
             default: Date.now
-          },
-          postedBy: {
+         },
+         postedBy: {
             type: Schema.Types.ObjectId,
             ref: 'User'
-          }
-        }
+         }
+       }
      ]
 });
 

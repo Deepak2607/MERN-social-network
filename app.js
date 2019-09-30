@@ -2,6 +2,7 @@ const express= require('express');
 const morgan= require('morgan');
 const mongoose= require("mongoose");
 const bodyParser= require('body-parser');
+const cookieParser = require('cookie-parser');
 const dotenv= require('dotenv');
 dotenv.config();
 //const upload= require('express-fileupload');
@@ -9,13 +10,12 @@ dotenv.config();
 //const methodOverride= require('method-override');
 //const session= require('express-session');
 //const flash= require('connect-flash');
-//const passport = require('passport');
-//const LocalStrategy = require('passport-local').Strategy;
+
 
 
 //importing routes
 const postRoutes = require('./routes/post');
-//const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth');
 //const userRoutes = require('./routes/user');
 
 const app= express();
@@ -38,6 +38,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
 
+//cookie-parser
+app.use(cookieParser());
+
+
 //morgan middleware..it is used to see requests
 app.use(morgan('dev'));
 
@@ -45,7 +49,7 @@ app.use(morgan('dev'));
 
 //routes middleware
 app.use('/post', postRoutes);
-//app.use('/api', authRoutes);
+app.use('/auth', authRoutes);
 //app.use('/api', userRoutes);
 
 
