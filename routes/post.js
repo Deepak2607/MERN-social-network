@@ -1,6 +1,7 @@
 const express= require('express');
 const router= express.Router();
 const expressJwt = require('express-jwt');
+const fs= require('fs');
 const {Post}= require('../models/Post');
 
 
@@ -42,9 +43,21 @@ router.post('/',requireSignin, async (req,res)=> {
     if(errors.length>0){
         return res.status(400).send(errors);
     }
-         
+    
+    
     try{
-        const post= new Post(req.body);
+        const file= req.files.file;
+        const filename= Date.now()+'-'+file.name;
+        console.log(file);
+        await file.mv('./public/uploads/'+ filename);
+             
+        let post= new Post({
+            title:req.body.title,
+            body:req.body.body,
+            postedBy: req.user._id,
+            file:filename
+            
+        })
         await post.save();
         res.send(post);   
     }
@@ -62,7 +75,7 @@ router.get('/all_posts', requireSignin, async (req,res)=> {
     
     try{
         let posts= await Post.find();
-        if(!posts){
+        if(posts.length==0){
             res.status(400).send("No posts found");
         }
         res.send(posts);

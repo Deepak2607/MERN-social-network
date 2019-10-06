@@ -5,6 +5,10 @@ const {User}= require('../models/User');
 
 
 
+//function to check authentication
+//checking if current token in cookies contain this secret or not
+//no token -> no secret -> no authentication
+//the same secret is used to generate token 
 const requireSignin = expressJwt({
     secret: "DEEPAKKUMRAWAT",
 //    userProperty: 'auth'
@@ -18,6 +22,19 @@ const requireSignin = expressJwt({
 
 
 
+
+
+//getting signed in user details
+//req.user conntain those fields which are used in generating the token during signin
+//I used _id and name to generate token, so req.user contain _id and name fields only 
+router.get('/',requireSignin, (req,res)=> {
+    res.send(req.user);
+})
+
+
+
+
+//get all users
 router.get('/all_users', requireSignin, async (req,res)=> {
     
     try{
@@ -36,6 +53,7 @@ router.get('/all_users', requireSignin, async (req,res)=> {
 
 
 
+//get a user by id
 router.get('/:id', requireSignin, async (req,res)=> {
     
     try{
@@ -56,10 +74,13 @@ router.get('/:id', requireSignin, async (req,res)=> {
 })
 
 
+
+//edit my user profile (my profile..obviously)
+//can't update another user's
 router.put('/edit', requireSignin, async (req, res)=> {
     
     try{
-        let user= await User.findByIdAndUpdate(req.user.id, {$set:req.body},{new:true});
+        let user= await User.findByIdAndUpdate(req.user._id, {$set:req.body},{new:true});
         res.send(user);
     }
     catch(err){
@@ -71,11 +92,21 @@ router.put('/edit', requireSignin, async (req, res)=> {
 
 
 
+//delete my profile
+router.delete('/delete', requireSignin, async (req, res)=> {
+     
+    try{
+        let user= await User.findByIdAndRemove(req.user._id);     
+        res.send(`yours (${user.name}'s) account is deleted`);
+   
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send("Server error");
+    }
 
-
-router.get('/',requireSignin, (req,res)=> {
-    res.send(req.user);
 })
+
 
 
 

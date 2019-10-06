@@ -3,6 +3,7 @@ const morgan= require('morgan');
 const mongoose= require("mongoose");
 const bodyParser= require('body-parser');
 const cookieParser = require('cookie-parser');
+const upload= require('express-fileupload');
 const dotenv= require('dotenv');
 dotenv.config();
 //const upload= require('express-fileupload');
@@ -31,6 +32,11 @@ mongoose.connect('mongodb://localhost:27017/socialNetwork',{ useNewUrlParser: tr
 }).catch((error)=> {
     console.log("error");
 })
+
+
+
+//upload-middleware
+app.use(upload());   
 
 
 //body-parser

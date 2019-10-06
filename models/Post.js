@@ -11,28 +11,28 @@ const PostSchema= new Schema({
         type: String,
         required: true
     },
-    photo: {
-        data: Buffer,
-        contenType: String
+    file: {
+//        data: Buffer,
+//        contenType: String
+        type:String
     },
     postedBy: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'user'
     },
     created: {
         type: Date,
         default: Date.now
     },
     updated: {
-        type: Date,
-        default: Date.now
+        type: Date
     },
     likes:
     [
       {
         user:{ 
             type: Schema.Types.ObjectId, 
-            ref: 'User'
+            ref: 'user'
         }
       }  
     ],
@@ -49,7 +49,7 @@ const PostSchema= new Schema({
          },
          postedBy: {
             type: Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'user'
          }
        }
      ]
