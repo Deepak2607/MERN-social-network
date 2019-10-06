@@ -1,14 +1,26 @@
 const express= require('express');
 const router= express.Router();
+const expressJwt = require('express-jwt');
 const {Post}= require('../models/Post');
 
-router.get('/',(req,res)=> {
-    res.send("hello");
-})
+
+
+const requireSignin = expressJwt({
+    secret: "DEEPAKKUMRAWAT",
+//    userProperty: 'auth'
+});
+
+//jwt- used to generate token and stores it in cookies
+//expressJwt- Middleware that checks if user has token and sets req.user.
+
+//This module lets you authenticate HTTP requests using JWT tokens in your Node.js applications.
+//JWTs are typically used to protect API endpoints, and are often issued using OpenID Connect.
 
 
 
-router.post('/',(req,res)=> {
+
+//writing a post
+router.post('/',requireSignin, async (req,res)=> {
     
 //    console.log(req.body);
     let errors=[];
@@ -28,31 +40,37 @@ router.post('/',(req,res)=> {
      
     
     if(errors.length>0){
-        res.status(400).send(errors);
+        return res.status(400).send(errors);
     }
-    else{     
+         
+    try{
         const post= new Post(req.body);
-        post.save().then((post)=> {
-            res.send(post);
-        }).catch(err=> {
-            console.log(err);
-            res.status(500).send('Server error');
-        })    
-    } 
-    
+        await post.save();
+        res.send(post);   
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send('Server error');
+    }
+ 
 })
 
 
-router.get('/all_posts',(req,res)=> {
+
+//get all posts
+router.get('/all_posts', requireSignin, async (req,res)=> {
     
-    Post.find().then(posts=> {
-        if(posts){
-            res.send(posts);
+    try{
+        let posts= await Post.find();
+        if(!posts){
+            res.status(400).send("No posts found");
         }
-    }).catch(err=> {
+        res.send(posts);
+    } 
+    catch(err){
         console.log(err);
         res.status(500).send('Server error');
-    })
+    }
 })
 
 

@@ -10,6 +10,8 @@ const bcrypt = require('bcryptjs');
 
 
 
+
+//user signup
 router.post('/signup', async (req,res)=> {
     
     let errors=[];
@@ -69,6 +71,8 @@ router.post('/signup', async (req,res)=> {
 })
 
 
+
+//user signin
 router.post('/signin', async (req,res)=> {
     
     
@@ -91,16 +95,28 @@ router.post('/signin', async (req,res)=> {
     // generate a token with user id and secret
     const JWT_SECRET= "DEEPAKKUMRAWAT";
     const token = jwt.sign({_id: user._id, name: user.name}, JWT_SECRET);
+    
     // persist the token as 't' in cookie with expiry date
     res.cookie('t', token, { expire: new Date() + 9999 });
-    // retrun response with user and token to frontend client
     
+    // retrun response with user and token to frontend client
     return res.send({ token, user });
     
-    
-    
-    
+    //token in stored in cookie and it can be accessed by client on frontend also..two ways above
+     
 })
+
+
+
+//user signout
+router.get('/signout',(req,res)=> {  
+    res.clearCookie('t');
+    return res.json({ message: 'Signout success!' });   
+})
+
+
+
+
 
 
 module.exports = router;

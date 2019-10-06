@@ -16,7 +16,7 @@ dotenv.config();
 //importing routes
 const postRoutes = require('./routes/post');
 const authRoutes = require('./routes/auth');
-//const userRoutes = require('./routes/user');
+const userRoutes = require('./routes/user');
 
 const app= express();
 const PORT= process.env.PORT || 3000;
@@ -50,8 +50,16 @@ app.use(morgan('dev'));
 //routes middleware
 app.use('/post', postRoutes);
 app.use('/auth', authRoutes);
-//app.use('/api', userRoutes);
+app.use('/user', userRoutes);
 
+
+
+//express-jwt middleware..to show invalid token error
+app.use(function (err, req, res, next) {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).send('You are unauthorized!');
+  }
+});
 
 
 app.listen(PORT, ()=> {
