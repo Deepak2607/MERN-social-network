@@ -1,5 +1,6 @@
 const express= require('express');
 const router= express.Router();
+const bcrypt = require('bcryptjs');
 const expressJwt = require('express-jwt');
 const {User}= require('../models/User');
 
@@ -24,9 +25,11 @@ const requireSignin = expressJwt({
 
 
 
-//getting signed in user details
+
 //req.user conntain those fields which are used in generating the token during signin
-//I used _id and name to generate token, so req.user contain _id and name fields only 
+//I used _id and name to generate token, so req.user contain _id and name fields only
+
+//getting my profile (signed in user)
 router.get('/',requireSignin, (req,res)=> {
     res.send(req.user);
 })
@@ -75,12 +78,21 @@ router.get('/:id', requireSignin, async (req,res)=> {
 
 
 
-//edit my user profile (my profile..obviously)
+//editing my profile (my profile..obviously)
 //can't update another user's
 router.put('/edit', requireSignin, async (req, res)=> {
     
+    const salt= await bcrypt.genSalt(10);
+    const hash= await bcrypt.hash(req.body.password, salt);
+         
+    let updatedUser= {
+        name:req.body.name,
+        email:req.body.email,
+        password:hash     
+    }
+    
     try{
-        let user= await User.findByIdAndUpdate(req.user._id, {$set:req.body},{new:true});
+        let user= await User.findByIdAndUpdate(req.user._id, {$set:updatedUser},{new:true});
         res.send(user);
     }
     catch(err){
